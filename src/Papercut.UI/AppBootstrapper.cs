@@ -22,7 +22,7 @@ namespace Papercut
 {
     using System;
     using System.Collections.Generic;
-    using System.Management.Instrumentation;
+    //using System.Management.Instrumentation;
     using System.Windows;
 
     using Autofac;
@@ -87,7 +87,9 @@ namespace Papercut
                 if (Container.TryResolveNamed(named, service, out result)) return result;
             }
 
-            throw new InstanceNotFoundException($"Could not locate any instances of contract {named ?? service.Name}.");
+            return null;
+
+            //throw new InstanceNotFoundException($"Could not locate any instances of contract {named ?? service.Name}.");
         }
 
         protected override void BuildUp(object instance)

@@ -77,7 +77,7 @@ namespace Papercut.Infrastructure.IPComm.IPComm
                         // send response back...
                         this.Logger.Information("Exchanging Event {@Event} -- Pushing to Remote", remoteEvent);
 
-                        this.Connection.SendJson(request.Type, remoteEvent);
+                        this.Connection.SendJson(request.Type, remoteEvent).Wait();
                     }
                 }
             }

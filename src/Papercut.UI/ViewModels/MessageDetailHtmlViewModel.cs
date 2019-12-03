@@ -162,81 +162,80 @@ namespace Papercut.ViewModels
             void VisibilityChanged(DependencyPropertyChangedEventArgs o)
             {
                 typedView.htmlView.Visibility = o.NewValue.ToType<bool>()
-                                                    ? Visibility.Visible
-                                                    : Visibility.Collapsed;
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
 
             Observable.FromEvent<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
-                a => ((s, e) => a(e)),
-                h => typedView.IsEnabledChanged += h,
-                h => typedView.IsEnabledChanged -= h)
+                    a => ((s, e) => a(e)),
+                    h => typedView.IsEnabledChanged += h,
+                    h => typedView.IsEnabledChanged -= h)
                 .Throttle(TimeSpan.FromMilliseconds(100))
                 .ObserveOnDispatcher()
                 .Subscribe(VisibilityChanged);
 
-            typedView.htmlView.ContextMenuOpening += (sender, args) =>
-            {
-                args.Handled = true;
-            };
+            typedView.htmlView.ContextMenuOpening += (sender, args) => { args.Handled = true; };
 
-            if (!BrowserHandler.TryGetWebBrowserInstance(typedView.htmlView, out var wb))
-            {
-                this._logger.Warning("Failure Retrieving COM+ Browser Instance");
-            }
+            //if (!BrowserHandler.TryGetWebBrowserInstance(typedView.htmlView, out var wb))
+            //{
+            //    this._logger.Warning("Failure Retrieving COM+ Browser Instance");
+            //}
 
-            if (wb != null)
-            {
-                wb.NewWindow3 += (ref object disp, ref bool cancel, uint flags, string context, string url) =>
-                {
-                    cancel = TryHandleNavigateToUri(new Uri(url));
-                };
-            }
+            //if (wb != null)
+            //{
+            //    wb.NewWindow3 += (ref object disp, ref bool cancel, uint flags, string context, string url) =>
+            //    {
+            //        cancel = TryHandleNavigateToUri(new Uri(url));
+            //    };
+            //}
 
-            typedView.htmlView.Navigated += (sender, args) =>
-            {
-                if (wb != null)
-                {
-                    wb.Silent = true;
-                }
-            };
+            //typedView.htmlView.Navigated += (sender, args) =>
+            //{
+            //    if (wb != null)
+            //    {
+            //        wb.Silent = true;
+            //    }
+            //};
         }
 
-        /// <summary>
-        /// From SO: http://stackoverflow.com/questions/1298255/how-do-i-suppress-script-errors-when-using-the-wpf-webbrowser-control
-        /// </summary>
-        static class BrowserHandler
-        {
-            private static Guid IWebBrowserAppGUID = new Guid("0002DF05-0000-0000-C000-000000000046");
-            private static Guid IWebBrowser2GUID = typeof(SHDocVw.WebBrowser).GUID;
+        ///// <summary>
+        ///// From SO: http://stackoverflow.com/questions/1298255/how-do-i-suppress-script-errors-when-using-the-wpf-webbrowser-control
+        ///// </summary>
+        //static class BrowserHandler
+        //{
+        //    private static Guid IWebBrowserAppGUID = new Guid("0002DF05-0000-0000-C000-000000000046");
+        //    private static Guid IWebBrowser2GUID = typeof(SHDocVw.WebBrowser).GUID;
 
-            internal static bool TryGetWebBrowserInstance(WebBrowser browser, out SHDocVw.WebBrowser webBrowser)
-            {
-                webBrowser = null;
+        //    internal static bool TryGetWebBrowserInstance(WebBrowser browser, out SHDocVw.WebBrowser webBrowser)
+        //    {
+        //        webBrowser = null;
 
-                // get an IWebBrowser from the document
-                if (!(browser?.Document is IServiceProvider serviceProvider)) return false;
+        //        // get an IWebBrowser from the document
+        //        if (!(browser?.Document is IServiceProvider serviceProvider)) return false;
 
-                webBrowser = (SHDocVw.WebBrowser)serviceProvider.QueryService(ref IWebBrowserAppGUID, ref IWebBrowser2GUID);
+        //        webBrowser =
+        //            (SHDocVw.WebBrowser) serviceProvider.QueryService(ref IWebBrowserAppGUID, ref IWebBrowser2GUID);
 
-                if (webBrowser == null) return false;
+        //        if (webBrowser == null) return false;
 
-                return true;
-            }
-        }
+        //        return true;
+        //    }
+        //}
 
-        [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        [Guid("6d5140c1-7436-11ce-8034-00aa006009fa")]
-        internal interface IServiceProvider
-        {
-            [return: MarshalAs(UnmanagedType.IUnknown)]
-            object QueryService(ref Guid guidService, ref Guid riid);
-        }
+        //    [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        //    [Guid("6d5140c1-7436-11ce-8034-00aa006009fa")]
+        //    internal interface IServiceProvider
+        //    {
+        //        [return: MarshalAs(UnmanagedType.IUnknown)]
+        //        object QueryService(ref Guid guidService, ref Guid riid);
+        //    }
 
-        [ComImport, Guid("6D5140C1-7436-11CE-8034-00AA006009FA"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        public interface IOleServiceProvider
-        {
-            [PreserveSig]
-            int QueryService([In] ref Guid guidService, [In] ref Guid riid, [MarshalAs(UnmanagedType.IDispatch)] out object ppvObject);
-        }
+        //    [ComImport, Guid("6D5140C1-7436-11CE-8034-00AA006009FA"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        //    public interface IOleServiceProvider
+        //    {
+        //        [PreserveSig]
+        //        int QueryService([In] ref Guid guidService, [In] ref Guid riid, [MarshalAs(UnmanagedType.IDispatch)] out object ppvObject);
+        //    }
+        //}
     }
 }
